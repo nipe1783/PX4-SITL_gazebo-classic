@@ -380,7 +380,6 @@ add_library(gazebo_parachute_plugin SHARED src/gazebo_parachute_plugin.cpp)
 add_library(gazebo_pose_sniffer_plugin SHARED src/gazebo_pose_sniffer_plugin.cpp)
 add_library(gazebo_airship_dynamics_plugin SHARED src/gazebo_airship_dynamics_plugin.cpp)
 add_library(gazebo_drop_plugin SHARED src/gazebo_drop_plugin.cpp)
-add_library(gazebo_rgv_movement_plugin SHARED src/gazebo_rgv_movement_plugin.cpp)
 
 set(plugins
   gazebo_airspeed_plugin
@@ -411,7 +410,6 @@ set(plugins
   gazebo_pose_sniffer_plugin
   gazebo_airship_dynamics_plugin
   gazebo_drop_plugin
-  gazebo_rgv_movement_plugin
   )
 
 foreach(plugin ${plugins})
@@ -422,22 +420,26 @@ target_link_libraries(gazebo_opticalflow_plugin ${OpticalFlow_LIBS})
 # If BUILD_ROS2_PLUGINS set to ON, build plugins that have ROS dependencies
 # Current plugins that can be used with ROS interface: gazebo_motor_failure_plugin
 if (BUILD_ROS2_PLUGINS)
-  add_library(gazebo_motor_failure_plugin SHARED src/gazebo_motor_failure_plugin.cpp)
-  target_link_libraries(gazebo_motor_failure_plugin ${GAZEBO_libraries} ${rclcpp_LIBRARIES})
-  list(APPEND plugins gazebo_motor_failure_plugin)
-  message(STATUS "adding gazebo_motor_failure_plugin to build")
+  # find_package calls for ROS 2 dependencies
+  find_package(ament_cmake REQUIRED)
+  find_package(geometry_msgs REQUIRED)
+  find_package(rclcpp REQUIRED)
+  find_package(sensor_msgs REQUIRED)
 
-  include_directories(
-    include
-    ${geometry_msgs_INCLUDE_DIRS}
-    ${sensor_msgs_INCLUDE_DIRS}
-    ${rclcpp_INCLUDE_DIRS}
-  )
-
-  target_link_libraries(gazebo_motor_failure_plugin
+  # Example plugin target
+  add_library(gazebo_ros2_example_plugin SHARED src/gazebo_ros2_example_plugin.cpp)
+  target_link_libraries(gazebo_ros2_example_plugin
     ${ament_LIBRARIES}
+    ${geometry_msgs_LIBRARIES}
     ${rclcpp_LIBRARIES}
-    ${GAZEBO_libraries}
+    ${sensor_msgs_LIBRARIES}
+    ${GAZEBO_LIBRARIES}
+  )
+  # Include directories
+  target_include_directories(gazebo_ros2_example_plugin PUBLIC
+    ${geometry_msgs_INCLUDE_DIRS}
+    ${rclcpp_INCLUDE_DIRS}
+    ${sensor_msgs_INCLUDE_DIRS}
   )
 endif()
 

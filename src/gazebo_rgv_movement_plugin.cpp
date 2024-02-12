@@ -21,6 +21,7 @@
 #include <gazebo/physics/Link.hh>
 #include "gazebo_rgv_movement_plugin_private.h"
 #include "gazebo_rgv_movement_plugin.h"
+#include "rclcpp/rclcpp.hpp"
 
 using namespace gazebo;
 
@@ -137,6 +138,16 @@ void RgvMovementPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   if (_sdf->HasElement("stop_duration"))
     this->dataPtr->stopDuration = _sdf->Get<double>("stop_duration");
 
+  if(_sdf->HasElement("ros_topic"))
+    this->dataPtr->rosTopic = _sdf->Get<std::string>("ros_topic");
+  
+  if (!rclcpp::ok()) {
+    rclcpp::init(0, nullptr);
+  }
+
+  this->dataPtr->rosNode = rclcpp::Node::make_shared("rgv_movement_plugin_node");
+  std::cout << "Publishing to ROS topic: " << this->dataPtr->rosTopic << std::endl;
+  this->dataPtr->publisher = this->dataPtr->rosNode->create_publisher<std_msgs::msg::String>(this->dataPtr->rosTopic, 10);
   // Connect to the world update signal
   this->dataPtr->updateConnection = event::Events::ConnectWorldUpdateBegin(
       std::bind(&RgvMovementPlugin::Update, this, std::placeholders::_1));
@@ -211,4 +222,7 @@ void RgvMovementPlugin::Update(const common::UpdateInfo &_info)
 
   // Apply velocity
   this->dataPtr->link->SetLinearVel(this->dataPtr->velocity);
+  auto message = std_msgs::msg::String();
+  message.data = "Hello, world!";
+  this->dataPtr->publisher->publish(message);
 }

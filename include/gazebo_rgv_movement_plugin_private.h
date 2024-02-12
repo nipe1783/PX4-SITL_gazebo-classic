@@ -7,6 +7,8 @@
 #include <gazebo/physics/Link.hh>
 #include <gazebo/common/Time.hh>
 
+
+
 namespace gazebo
 {
   /// \internal
@@ -29,6 +31,9 @@ namespace gazebo
     public: common::Time moveDuration;
     public: common::Time stopDuration;
     public: common::Time stopTime;
+    public: std::string rosTopic;
+    public: rclcpp::Node::SharedPtr rosNode;
+    public: rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher;
 
 
     /// \brief Time between recomputing a new velocity vector
