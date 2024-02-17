@@ -154,8 +154,10 @@ void RgvMovementPlugin::Update(const common::UpdateInfo &_info)
     message.data.push_back(position.Y());
     message.data.push_back(position.Z());
     this->dataPtr->publisherGazeboFrame->publish(message);
-    message.data[0] -= 1.0;
-    message.data[1] -= 1.0;
+    message.data.clear();
+    message.data.push_back(position.Y() - 1.0);
+    message.data.push_back(position.X() - 1.0);
+    message.data.push_back(position.Z());
     this->dataPtr->publisherUASFrame->publish(message);
   }
 
