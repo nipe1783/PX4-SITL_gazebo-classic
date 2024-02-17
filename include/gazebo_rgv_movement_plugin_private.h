@@ -33,10 +33,12 @@ namespace gazebo
     public: common::Time moveDuration;
     public: common::Time stopDuration;
     public: common::Time stopTime;
-    public: std::string rosTopic;
+    public: std::string rosTopicGazeboFrame;
+    public: std::string rosTopicUASFrame;
     public: std::string rosNodeName;
     public: rclcpp::Node::SharedPtr rosNode;
-    public: rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr publisher;
+    public: rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr publisherGazeboFrame;
+    public: rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr publisherUASFrame;
 
 
     /// \brief Time between recomputing a new velocity vector

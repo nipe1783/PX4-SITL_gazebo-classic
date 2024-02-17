@@ -118,8 +118,10 @@ void RgvMovementPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
   // Create a publisher
   if(_sdf->HasElement("ros_topic")){
-    this->dataPtr->rosTopic = _sdf->Get<std::string>("ros_topic");
-    this->dataPtr->publisher = this->dataPtr->rosNode->create_publisher<std_msgs::msg::Float64MultiArray>(this->dataPtr->rosTopic, 10);
+    this->dataPtr->rosTopicGazeboFrame = _sdf->Get<std::string>("ros_topic") + "/gazebo_i_frame";
+    this->dataPtr->publisherGazeboFrame = this->dataPtr->rosNode->create_publisher<std_msgs::msg::Float64MultiArray>(this->dataPtr->rosTopicGazeboFrame, 10);
+    this->dataPtr->rosTopicUASFrame = _sdf->Get<std::string>("ros_topic") + "/uas_i_frame";
+    this->dataPtr->publisherUASFrame = this->dataPtr->rosNode->create_publisher<std_msgs::msg::Float64MultiArray>(this->dataPtr->rosTopicUASFrame, 10);
   }
 
   // Connect to the world update signal for continuous operation
@@ -144,14 +146,17 @@ void RgvMovementPlugin::Update(const common::UpdateInfo &_info)
     return;
   
   // Publishing logic
-  if (this->dataPtr->rosNode && this->dataPtr->publisher) {
+  if (this->dataPtr->rosNode && this->dataPtr->publisherGazeboFrame && this->dataPtr->publisherUASFrame) {
     ignition::math::Pose3d pose = this->dataPtr->link->WorldPose();
     ignition::math::Vector3d position = pose.Pos();
     auto message = std_msgs::msg::Float64MultiArray();
     message.data.push_back(position.X());
     message.data.push_back(position.Y());
     message.data.push_back(position.Z());
-    this->dataPtr->publisher->publish(message);
+    this->dataPtr->publisherGazeboFrame->publish(message);
+    message.data[0] -= 1.0;
+    message.data[1] -= 1.0;
+    this->dataPtr->publisherUASFrame->publish(message);
   }
 
   // Stop the movement if the stop time has been reached`````````````````
