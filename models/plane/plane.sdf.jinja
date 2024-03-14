@@ -192,7 +192,7 @@
         </material>
         <plugin name="left_elevon_lift_visual" filename="libForceVisual.so">
           <topic_name>lift_force/left_elevon</topic_name>
-          <color>Gazebo/Green</color>
+          <color>Gazebo/Red</color>
         </plugin>
       </visual>
     </link>
@@ -256,10 +256,6 @@
             <uri>__default__</uri>
           </script>
         </material>
-        <plugin name="left_flap_lift_visual" filename="libForceVisual.so">
-          <topic_name>lift_force/left_flap</topic_name>
-          <color>Gazebo/Green</color>
-        </plugin>
       </visual>
     </link>
     <link name="right_flap">
@@ -289,10 +285,6 @@
             <uri>__default__</uri>
           </script>
         </material>
-        <plugin name="right_elevon_lift_visual" filename="libForceVisual.so">
-          <topic_name>lift_force/right_flap</topic_name>
-          <color>Gazebo/Green</color>
-        </plugin>
       </visual>
     </link>
     <link name="elevator">
@@ -322,10 +314,6 @@
             <uri>__default__</uri>
           </script>
         </material>
-        <plugin name="elevator_lift_visual" filename="libForceVisual.so">
-          <topic_name>lift_force/elevator</topic_name>
-          <color>Gazebo/Green</color>
-        </plugin>
       </visual>
     </link>
     <link name="rudder">
@@ -355,10 +343,6 @@
             <uri>__default__</uri>
           </script>
         </material>
-        <plugin name="rudder_lift_visual" filename="libForceVisual.so">
-          <topic_name>lift_force/rudder</topic_name>
-          <color>Gazebo/Green</color>
-        </plugin>
       </visual>
     </link>
     <joint name='left_elevon_joint' type='revolute'>
@@ -511,7 +495,7 @@
       <forward>1 0 0</forward>
       <upward>0 0 1</upward>
       <link_name>base_link</link_name>
-      <topic_name>lift_force/left_elevon</topic_name> <!--Uncomment to draw the force-->
+      <!--<topic_name>lift_force/left_elevon</topic_name> Uncomment to draw the force -->
       <control_joint_name>
         left_elevon_joint
       </control_joint_name>
@@ -534,7 +518,7 @@
       <forward>1 0 0</forward>
       <upward>0 0 1</upward>
       <link_name>base_link</link_name>
-      <topic_name>lift_force/right_elevon</topic_name> <!--Uncomment to draw the force-->
+      <!--<topic_name>lift_force/right_elevon</topic_name> Uncomment to draw the force -->
       <control_joint_name>
         right_elevon_joint
       </control_joint_name>
@@ -557,7 +541,6 @@
       <forward>1 0 0</forward>
       <upward>0 0 1</upward>
       <link_name>base_link</link_name>
-      <topic_name>lift_force/left_flap</topic_name> <!--Uncomment to draw the force-->
       <control_joint_name>
         left_flap_joint
       </control_joint_name>
@@ -580,7 +563,6 @@
       <forward>1 0 0</forward>
       <upward>0 0 1</upward>
       <link_name>base_link</link_name>
-      <topic_name>lift_force/right_flap</topic_name> <!--Uncomment to draw the force-->
       <control_joint_name>
         right_flap_joint
       </control_joint_name>
@@ -603,7 +585,6 @@
       <forward>1 0 0</forward>
       <upward>0 0 1</upward>
       <link_name>base_link</link_name>
-      <topic_name>lift_force/elevator</topic_name> <!--Uncomment to draw the force-->
       <control_joint_name>
         elevator_joint
       </control_joint_name>
@@ -626,7 +607,6 @@
       <forward>1 0 0</forward>
       <upward>0 1 0</upward>
       <link_name>base_link</link_name>
-      <topic_name>lift_force/rudder</topic_name> <!--Uncomment to draw the force-->
       <control_joint_name>
          rudder_joint
       </control_joint_name>

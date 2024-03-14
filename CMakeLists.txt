@@ -37,7 +37,7 @@ include(GNUInstallDirs)
 #######################
 
 option(BUILD_GSTREAMER_PLUGIN "enable gstreamer plugin" ON)
-option(BUILD_ROS2_PLUGINS "Enable building ROS2 dependent plugins" OFF)
+option(BUILD_ROS_PLUGINS "Enable building ROS dependent plugins" OFF)
 option(GENERATE_ROS_MODELS "Generate model sdf for ROS environment" OFF)
 
 option(SEND_VISION_ESTIMATION_DATA "Send Mavlink VISION_POSITION_ESTIMATE msgs" OFF)
@@ -103,15 +103,12 @@ link_directories(${GAZEBO_LIBRARY_DIRS})
 add_subdirectory( external/OpticalFlow OpticalFlow )
 set( OpticalFlow_LIBS "OpticalFlow" )
 
-# for ROS2 subscribers and publishers
-# if (BUILD_ROS2_PLUGINS)
-find_package(ament_cmake REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(sensor_msgs REQUIRED)
-# endif()
-
+# for ROS subscribers and publishers
+if (BUILD_ROS_PLUGINS)
+  find_package(geometry_msgs REQUIRED)
+  find_package(roscpp REQUIRED)
+  find_package(sensor_msgs REQUIRED)
+endif()
 
 # find MAVLink
 find_package(MAVLink)
@@ -192,7 +189,6 @@ include_directories(
   ${GAZEBO_INCLUDE_DIRS}
   ${GAZEBO_MSG_INCLUDE_DIRS}
   ${MAVLINK_INCLUDE_DIRS}
-  ${MAVLINK_INCLUDE_DIRS}/mavlink/v2.0 # Workaround for "fatal error: development/mavlink.h: No such file or directory"
   ${OGRE_INCLUDE_DIRS}
   ${OGRE_INCLUDE_DIRS}/Paging		# Workaround for "fatal error: OgrePagedWorldSection.h: No such file or directory"
   ${OpenCV_INCLUDE_DIRS}
@@ -324,7 +320,6 @@ set(sensor_msgs
   msgs/Airspeed.proto
   msgs/Imu.proto
   msgs/IRLock.proto
-  msgs/TargetRelative.proto
   msgs/Float.proto
   msgs/Groundtruth.proto
   msgs/Range.proto
@@ -358,11 +353,9 @@ add_library(gazebo_camera_manager_plugin SHARED src/gazebo_camera_manager_plugin
 add_library(gazebo_gps_plugin SHARED src/gazebo_gps_plugin.cpp)
 add_library(gazebo_groundtruth_plugin SHARED src/gazebo_groundtruth_plugin.cpp)
 add_library(gazebo_irlock_plugin SHARED src/gazebo_irlock_plugin.cpp)
-add_library(gazebo_random_velocity_plugin SHARED src/gazebo_random_velocity_plugin.cpp)
 add_library(gazebo_lidar_plugin SHARED src/gazebo_lidar_plugin.cpp)
 add_library(gazebo_opticalflow_mockup_plugin SHARED src/gazebo_opticalflow_mockup_plugin.cpp)
 add_library(gazebo_opticalflow_plugin SHARED src/gazebo_opticalflow_plugin.cpp)
-add_library(gazebo_aruco_plugin SHARED src/gazebo_aruco_plugin.cpp)
 add_library(gazebo_sonar_plugin SHARED src/gazebo_sonar_plugin.cpp)
 add_library(gazebo_uuv_plugin SHARED src/gazebo_uuv_plugin.cpp)
 add_library(gazebo_vision_plugin SHARED src/gazebo_vision_plugin.cpp)
@@ -378,7 +371,6 @@ add_library(gazebo_barometer_plugin SHARED src/gazebo_barometer_plugin.cpp)
 add_library(gazebo_catapult_plugin SHARED src/gazebo_catapult_plugin.cpp)
 add_library(gazebo_usv_dynamics_plugin SHARED src/gazebo_usv_dynamics_plugin.cpp)
 add_library(gazebo_parachute_plugin SHARED src/gazebo_parachute_plugin.cpp)
-add_library(gazebo_pose_sniffer_plugin SHARED src/gazebo_pose_sniffer_plugin.cpp)
 add_library(gazebo_airship_dynamics_plugin SHARED src/gazebo_airship_dynamics_plugin.cpp)
 add_library(gazebo_drop_plugin SHARED src/gazebo_drop_plugin.cpp)
 
@@ -388,11 +380,9 @@ set(plugins
   gazebo_gps_plugin
   gazebo_groundtruth_plugin
   gazebo_irlock_plugin
-  gazebo_random_velocity_plugin
   gazebo_lidar_plugin
   gazebo_opticalflow_mockup_plugin
   gazebo_opticalflow_plugin
-  gazebo_aruco_plugin
   gazebo_sonar_plugin
   gazebo_uuv_plugin
   gazebo_vision_plugin
@@ -408,7 +398,6 @@ set(plugins
   gazebo_catapult_plugin
   gazebo_usv_dynamics_plugin
   gazebo_parachute_plugin
-  gazebo_pose_sniffer_plugin
   gazebo_airship_dynamics_plugin
   gazebo_drop_plugin
   )
@@ -418,48 +407,26 @@ foreach(plugin ${plugins})
 endforeach()
 target_link_libraries(gazebo_opticalflow_plugin ${OpticalFlow_LIBS})
 
-# If BUILD_ROS2_PLUGINS set to ON, build plugins that have ROS dependencies
+# If BUILD_ROS_PLUGINS set to ON, build plugins that have ROS dependencies
 # Current plugins that can be used with ROS interface: gazebo_motor_failure_plugin
-# if (BUILD_ROS2_PLUGINS)
-  # Add gazebo_motor_failure_plugin
-# add_library(gazebo_motor_failure_plugin SHARED src/gazebo_motor_failure_plugin.cpp)
-# target_link_libraries(gazebo_motor_failure_plugin
-#   ${GAZEBO_libraries}
-#   ${rclcpp_LIBRARIES}
-# )
-# list(APPEND plugins gazebo_motor_failure_plugin)
-# message(STATUS "adding gazebo_motor_failure_plugin to build")
+if (BUILD_ROS_PLUGINS)
+  add_library(gazebo_motor_failure_plugin SHARED src/gazebo_motor_failure_plugin.cpp)
+  target_link_libraries(gazebo_motor_failure_plugin ${GAZEBO_libraries} ${roscpp_LIBRARIES})
+  list(APPEND plugins gazebo_motor_failure_plugin)
+  message(STATUS "adding gazebo_motor_failure_plugin to build")
 
-# Add gazebo_rgv_movement_plugin
-add_library(gazebo_rgv_movement_plugin SHARED src/gazebo_rgv_movement_plugin.cpp)
-target_link_libraries(gazebo_rgv_movement_plugin
-  ${GAZEBO_libraries}
-  ${rclcpp_LIBRARIES}
-)
-list(APPEND plugins gazebo_rgv_movement_plugin)
-message(STATUS "adding gazebo_rgv_movement_plugin to build")
+  include_directories(
+    include
+    ${geometry_msgs_INCLUDE_DIRS}
+    ${sensor_msgs_INCLUDE_DIRS}
+  )
 
-# Include directories for ROS 2 and Gazebo
-include_directories(
-  include
-  ${geometry_msgs_INCLUDE_DIRS}
-  ${sensor_msgs_INCLUDE_DIRS}
-  ${rclcpp_INCLUDE_DIRS}
-)
-
-# Ensure all plugins link against ROS 2 and Gazebo libraries
-# target_link_libraries(gazebo_motor_failure_plugin
-#   ${ament_LIBRARIES}
-#   ${rclcpp_LIBRARIES}
-#   ${GAZEBO_libraries}
-# )
-
-target_link_libraries(gazebo_rgv_movement_plugin
-  ${ament_LIBRARIES}
-  ${rclcpp_LIBRARIES}
-  ${GAZEBO_libraries}
-)
-# endif()
+  target_link_libraries(gazebo_motor_failure_plugin
+    ${catkin_LIBRARIES}
+    ${roscpp_LIBRARIES}
+    ${GAZEBO_libraries}
+  )
+endif()
 
 if (GSTREAMER_FOUND)
   add_library(gazebo_gst_camera_plugin SHARED src/gazebo_gst_camera_plugin.cpp)
@@ -504,9 +471,6 @@ set(plugins
 
   add_library(ForceVisual SHARED src/force_visual/force_visual.cpp)
   list(APPEND plugins ForceVisual)
-  
-  add_library(AdvancedLiftDragPlugin SHARED src/liftdrag_plugin/advanced_liftdrag_plugin.cpp)
-  list(APPEND plugins LiftDragPlugin)
 #endif()
 
 foreach(plugin ${plugins})

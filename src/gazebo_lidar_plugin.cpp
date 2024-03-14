@@ -47,6 +47,7 @@ LidarPlugin::~LidarPlugin()
   newLaserScansConnection_->~Connection();
   newLaserScansConnection_.reset();
   parentSensor_.reset();
+  world_->Reset();
 }
 
 /////////////////////////////////////////////////
@@ -160,10 +161,10 @@ void LidarPlugin::OnNewLaserScans()
   if (simulate_fog_ && current_distance > 2.0f) {
     double whiteNoise = ignition::math::Rand::DblNormal(0.0f, 0.1f);
     current_distance = 2.0f + whiteNoise;
-  } else if (current_distance < min_distance_) {
+  } else if (current_distance < min_distance_ || std::isinf(current_distance)) {
     current_distance = min_distance_;
-  } else if (current_distance > max_distance_ || std::isinf(current_distance)) {
-    current_distance = 0.0f;
+  } else if (current_distance > max_distance_) {
+    current_distance = max_distance_;
   }
 
 

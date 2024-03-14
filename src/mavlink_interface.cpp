@@ -19,18 +19,17 @@ void MavlinkInterface::Load()
       abort();
     }
   }
-  local_qgc_addr_.sin_addr.s_addr = htonl(INADDR_ANY);
+  local_qgc_addr_.sin_port = 0;
   if (qgc_addr_ != "INADDR_ANY") {
-    local_qgc_addr_.sin_addr.s_addr = inet_addr(qgc_addr_.c_str());
-    if (local_qgc_addr_.sin_addr.s_addr == INADDR_NONE) {
+    local_qgc_addr_.sin_port = inet_addr(qgc_addr_.c_str());
+    if (local_qgc_addr_.sin_port == 0) {
       std::cerr << "Invalid qgc_addr: " << qgc_addr_ << ", aborting\n";
       abort();
     }
   }
-  local_sdk_addr_.sin_addr.s_addr = htonl(INADDR_ANY);
   if (sdk_addr_ != "INADDR_ANY") {
-    local_sdk_addr_.sin_addr.s_addr = inet_addr(sdk_addr_.c_str());
-    if (local_sdk_addr_.sin_addr.s_addr == INADDR_NONE) {
+    local_sdk_addr_.sin_port = inet_addr(sdk_addr_.c_str());
+    if (local_sdk_addr_.sin_port == 0) {
       std::cerr << "Invalid sdk_addr: " << sdk_addr_ << ", aborting\n";
       abort();
     }

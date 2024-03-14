@@ -51,6 +51,7 @@ GroundtruthPlugin::~GroundtruthPlugin()
 {
   if (updateConnection_)
     updateConnection_->~Connection();
+  world_->Reset();
 }
 
 void GroundtruthPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)

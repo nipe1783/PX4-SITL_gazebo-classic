@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-13]
+        os: [macos-10.15, macos-11.0]
     steps:
     - uses: actions/checkout@v1
     - name: submodule update
@@ -25,11 +25,6 @@ jobs:
         git clone https://github.com/mavlink/c_library_v2.git /usr/local/include/mavlink
     - name: Install
       run: |
-        rm '/usr/local/bin/2to3'
-        rm '/usr/local/bin/idle3'
-        rm '/usr/local/bin/pydoc3'
-        rm '/usr/local/bin/python3'
-        rm '/usr/local/bin/python3-config'
         pushd googletest
         mkdir build
         pushd build
