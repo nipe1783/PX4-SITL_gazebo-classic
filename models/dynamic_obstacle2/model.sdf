@@ -59,8 +59,8 @@
       </link>
       <plugin name="rgv_movement_plugin" filename="libgazebo_rgv_movement_plugin.so">
         <link>link</link>
-        <initial_velocity>1 0 0</initial_velocity>
-        <velocity_factor>1</velocity_factor>
+        <initial_velocity>0 0 0</initial_velocity>
+        <velocity_factor>0</velocity_factor>
         <update_period>10</update_period>
         <move_duration>15</move_duration>
         <stop_duration>30</stop_duration>
