@@ -60,7 +60,7 @@
       <plugin name="rgv_movement_plugin" filename="libgazebo_rgv_movement_plugin.so">
         <link>link</link>
         <initial_velocity>1 0 0</initial_velocity>
-        <velocity_factor>1.5</velocity_factor>
+        <velocity_factor>1</velocity_factor>
         <update_period>5</update_period>
         <move_duration>25</move_duration>
         <stop_duration>30</stop_duration>
